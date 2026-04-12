@@ -1,29 +1,28 @@
 # Stockerly: Real-Time Stock Analysis Dashboard
 
+### 🌐 [Live Demo: stockerly1.vercel.app](https://stockerly1.vercel.app/)
+
 ## 📌 Project Overview
-Stockerly is a functional web dashboard designed to help users track financial market data. This project demonstrates the ability to handle real-time API integration, persistent data storage, and modular JavaScript architecture.
+Stockerly is a high-performance web dashboard built to track financial market data in real-time. This project highlights the intersection of **Software Development** and **Visual Literacy**, providing a clean, dark-themed interface for monitoring stocks, managing a personal watchlist, and analyzing data through JavaScript manipulation.
 
-## 🛠️ Tech Stack
-- **Frontend:** HTML5, CSS3 (Grid & Flexbox)
-- **Logic:** JavaScript (ES6+), Vite
-- **API:** Alpha Vantage
-- **Persistence:** LocalStorage API
+## 🛠️ Technical Stack
+- **Frontend Framework:** Vite (Fast build tool & dev server)
+- **Logic:** Vanilla JavaScript (ES6+) with Modular Architecture
+- **Styling:** CSS3 (Modern Grid/Flexbox with Dark Mode UI)
+- **API:** Alpha Vantage Financial API
+- **Deployment:** Vercel (CI/CD Integrated)
 
-## ✨ Key Features
-- **Real-Time Data:** Fetches live price and change data via the Alpha Vantage Global Quote endpoint.
-- **Dynamic Watchlist:** Add and remove stocks from a personalized list.
-- **HOF Manipulation:** - `.sort()`: Organize stocks by price (High to Low).
-  - `.filter()`: View only premium stocks (> $150) or remove items from the list.
-  - `.map()`: Dynamically render stock cards.
-- **Persistence:** Your watchlist stays saved in the browser across sessions.
+## ✨ Core Features
+- **Real-Time Market Data:** Integrated Alpha Vantage `GLOBAL_QUOTE` endpoint to fetch the latest price and percentage change.
+- **Persistent Watchlist:** Uses **LocalStorage** to ensure your saved stocks remain on the dashboard even after a page refresh.
+- **Data Manipulation (HOFs):** - `.sort()`: Reorders your watchlist by price (High to Low).
+  - `.filter()`: Powering the "Premium" filter (Price > $150) and the "Remove" functionality.
+  - `.map()`: Dynamically generating the UI cards from the stock data array.
+- **Visual Design:** A mobile-responsive grid layout featuring a deep-navy aesthetic with high-contrast blue accents and card-hover effects.
 
-## 🚀 Setup
-1. Clone the repo.
-2. Run `npm install`.
-3. Create a `.env` file and add `VITE_ALPHA_KEY=YOUR_API_KEY`.
-4. Start the server with `npm run dev`.
+## 📂 Modular File Structure
+- `js/api.js`: Handles all `fetch()` requests and environment variable security.
+- `js/utils.js`: Contains all logic for Array Higher-Order Functions and LocalStorage persistence.
+- `js/app.js`: The central controller managing event listeners and DOM updates.
+- `index.html` & `style.css`: The structural and visual backbone of the application.
 
-## 📂 Project Structure
-- `/js/api.js` - API fetch logic.
-- `/js/utils.js` - Helper functions (HOFs & LocalStorage).
-- `/js/app.js` - Event listeners and UI controller.
