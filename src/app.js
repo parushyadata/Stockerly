@@ -1,6 +1,6 @@
 import { getStockQuote } from './api.js';
 import { renderAllStocks, sortByPrice, filterExpensive } from './utils.js';
-
+import { removeStock } from './utils.js';
 const searchBtn = document.getElementById('searchBtn');
 const searchInput = document.getElementById('searchInput');
 const display = document.getElementById('stockDisplay');
@@ -26,7 +26,7 @@ searchBtn.addEventListener('click', async () => {
                     change: data["10. change percent"]
                 });
             }
-            renderAllStocks(stockList); // Render the whole list
+            renderAllStocks(stockList, display); // Render the whole list
         }
     } catch (err) {
         console.error(err);
@@ -48,4 +48,17 @@ document.getElementById('filterBtn').addEventListener('click', () => {
 // 3. Handling the "Show All" Button
 document.getElementById('showAllBtn').addEventListener('click', () => {
     renderAllStocks(stockList, display);
+});
+display.addEventListener('click', (event) => {
+    // Check if what was clicked is actually a delete button
+    if (event.target.classList.contains('delete-btn')) {
+        // Get the symbol from the "data-symbol" attribute we created in utils.js
+        const symbol = event.target.getAttribute('data-symbol');
+        
+        // Update our main list using the filter function
+        stockList = removeStock(stockList, symbol);
+        
+        // Re-render the UI with the updated list
+        renderAllStocks(stockList, display);
+    }
 });

@@ -26,3 +26,7 @@ export function sortByPrice(stocks) {
 export function filterExpensive(stocks) {
     return stocks.filter(stock => stock.price > 150);
 }
+// HOF: .filter() - Removes a specific stock from the array
+export function removeStock(stocks, symbolToRemove) {
+    return stocks.filter(stock => stock.symbol !== symbolToRemove);
+}
