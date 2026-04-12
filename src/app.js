@@ -1,13 +1,13 @@
 import { getStockQuote } from './api.js';
-import { renderAllStocks, sortByPrice, filterExpensive } from './utils.js';
-import { removeStock } from './utils.js';
+import { renderAllStocks, sortByPrice, filterExpensive, removeStock, saveToLocal, loadFromLocal } from './utils.js';
 
 const searchBtn = document.getElementById('searchBtn');
 const searchInput = document.getElementById('searchInput');
 const display = document.getElementById('stockDisplay');
 const status = document.getElementById('statusMessage');
 
-let stockList = []; // This stores your watchlist
+let stockList = loadFromLocal(); // Initialize your watchlist from LocalStorage
+renderAllStocks(stockList, display); // Render saved stocks immediately on page load
 
 // Step B: Update your search event listener
 searchBtn.addEventListener('click', async () => {
@@ -26,6 +26,8 @@ searchBtn.addEventListener('click', async () => {
                     price: parseFloat(data["05. price"]),
                     change: data["10. change percent"]
                 });
+                stockList.push(newStock)
+                saveToLocal(stockList);
             }
             renderAllStocks(stockList, display); // Render the whole list
         }
@@ -59,6 +61,7 @@ display.addEventListener('click', (event) => {
     
     // Update our main list using the filter function
     stockList = removeStock(stockList, symbol);
+    saveToLocal(stockList);
     
     // Re-render the UI with the updated list
     renderAllStocks(stockList, display);

@@ -30,3 +30,13 @@ export function filterExpensive(stocks) {
 export function removeStock(stocks, symbolToRemove) {
     return stocks.filter(stock => stock.symbol !== symbolToRemove);
 }
+// Save the current watchlist to LocalStorage
+export function saveToLocal(stocks) {
+    localStorage.setItem('stockerlyy_watchlist', JSON.stringify(stocks));
+}
+
+// Load the watchlist from LocalStorage
+export function loadFromLocal() {
+    const saved = localStorage.getItem('stockerlyy_watchlist');
+    return saved ? JSON.parse(saved) : [];
+}
