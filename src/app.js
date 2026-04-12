@@ -1,35 +1,51 @@
 import { getStockQuote } from './api.js';
+import { renderAllStocks, sortByPrice, filterExpensive } from './utils.js';
 
 const searchBtn = document.getElementById('searchBtn');
 const searchInput = document.getElementById('searchInput');
 const display = document.getElementById('stockDisplay');
 const status = document.getElementById('statusMessage');
 
+let stockList = []; // This stores your watchlist
+
+// Step B: Update your search event listener
 searchBtn.addEventListener('click', async () => {
     const symbol = searchInput.value.toUpperCase().trim();
     if (!symbol) return;
-
-    // Milestone 2: Handle loading state
-    status.innerHTML = `<p>Searching for ${symbol}...</p>`;
-    display.innerHTML = "";
 
     try {
         const data = await getStockQuote(symbol);
         
         if (data && data["01. symbol"]) {
-            status.innerHTML = ""; // Clear loading message
-            // Milestone 2: Display fetched data dynamically
-            display.innerHTML = `
-                <div class="stock-card">
-                    <h2>${data["01. symbol"]}</h2>
-                    <p class="price">$${parseFloat(data["05. price"]).toFixed(2)}</p>
-                    <p class="change">Change: ${data["10. change percent"]}</p>
-                </div>
-            `;
-        } else {
-            status.innerHTML = `<p>No data found for "${symbol}".</p>`;
+            // Check if stock is already in list to avoid duplicates
+            if (!stockList.some(s => s.symbol === data["01. symbol"])) {
+                // Add the new stock object to our array
+                stockList.push({
+                    symbol: data["01. symbol"],
+                    price: parseFloat(data["05. price"]),
+                    change: data["10. change percent"]
+                });
+            }
+            renderAllStocks(stockList); // Render the whole list
         }
     } catch (err) {
-        status.innerHTML = `<p style="color: red;">${err.message}</p>`;
+        console.error(err);
     }
+});
+
+// 1. Handling the Sort Button
+document.getElementById('sortBtn').addEventListener('click', () => {
+    const sortedData = sortByPrice(stockList);
+    renderAllStocks(sortedData, display);
+});
+
+// 2. Handling the Filter Button
+document.getElementById('filterBtn').addEventListener('click', () => {
+    const filteredData = filterExpensive(stockList);
+    renderAllStocks(filteredData, display);
+});
+
+// 3. Handling the "Show All" Button
+document.getElementById('showAllBtn').addEventListener('click', () => {
+    renderAllStocks(stockList, display);
 });

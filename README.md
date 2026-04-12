@@ -22,5 +22,11 @@ Technical Implementation: All data processing (searching, filtering, and sorting
 
 🚀 Setup and Installation
 Clone the repository to your local machine.
-Open the index.html file in any modern web browser.
+Install dependencies and start the Vite development server:
+
+  npm install
+  npm run dev
+
+Open the app using the local Vite URL shown in the terminal (for example, http://localhost:5173).
+Do not open `index.html` directly via the file system, because Vite environment variables like `VITE_ALPHA_KEY` require the dev server to be loaded.
 Ensure you have an active internet connection to fetch real-time data from the Alpha Vantage API.
