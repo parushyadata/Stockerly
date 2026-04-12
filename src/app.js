@@ -1,6 +1,7 @@
 import { getStockQuote } from './api.js';
 import { renderAllStocks, sortByPrice, filterExpensive } from './utils.js';
 import { removeStock } from './utils.js';
+
 const searchBtn = document.getElementById('searchBtn');
 const searchInput = document.getElementById('searchInput');
 const display = document.getElementById('stockDisplay');
@@ -50,23 +51,16 @@ document.getElementById('showAllBtn').addEventListener('click', () => {
     renderAllStocks(stockList, display);
 });
 display.addEventListener('click', (event) => {
-    // Check if what was clicked is actually a delete button
-    if (event.target.classList.contains('delete-btn')) {
-        // Get the symbol from the "data-symbol" attribute we created in utils.js
-        const symbol = event.target.getAttribute('data-symbol');
-        
-        // Update our main list using the filter function
-        stockList = removeStock(stockList, symbol);
-        
-        // Re-render the UI with the updated list
-        renderAllStocks(stockList, display);
-    }
+    const deleteButton = event.target.closest('.delete-btn');
+    if (!deleteButton || !display.contains(deleteButton)) return;
+
+    // Get the symbol from the "data-symbol" attribute we created in utils.js
+    const symbol = deleteButton.getAttribute('data-symbol');
+    
+    // Update our main list using the filter function
+    stockList = removeStock(stockList, symbol);
+    
+    // Re-render the UI with the updated list
+    renderAllStocks(stockList, display);
 });
 
-container.innerHTML = stocks.map(stock => `
-    <div class="stock-card">
-        <h3>${stock.symbol}</h3>
-        <p>Price: $${stock.price.toFixed(2)}</p>
-        <button class="delete-btn" data-symbol="${stock.symbol}">Remove</button>
-    </div>
-`).join('');
