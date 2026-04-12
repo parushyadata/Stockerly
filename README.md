@@ -1,32 +1,29 @@
-Stockerly: Real-Time Stock Analysis Dashboard
+# Stockerly: Real-Time Stock Analysis Dashboard
 
-📌 Project Purpose
-Stockerly is a web application designed to help users track and analyze financial market data in real-time. The goal of this project is to provide a clean, intuitive interface for monitoring stock performance, searching for specific tickers, and organizing financial data through advanced filtering and sorting mechanisms
+## 📌 Project Overview
+Stockerly is a functional web dashboard designed to help users track financial market data. This project demonstrates the ability to handle real-time API integration, persistent data storage, and modular JavaScript architecture.
 
-🛠️ Technologies Involved
-HTML5 & CSS3:For structuring and styling the user interface.
-JavaScript (ES6+): For application logic, handling asynchronous API calls, and data manipulation.
-GitHub: For version control and project documentation.
+## 🛠️ Tech Stack
+- **Frontend:** HTML5, CSS3 (Grid & Flexbox)
+- **Logic:** JavaScript (ES6+), Vite
+- **API:** Alpha Vantage
+- **Persistence:** LocalStorage API
 
-📊 API Integration
-This project integrates the Alpha Vantage API to fetch real-time financial data. Specifically, it utilizes the following endpoints:
-Symbol Search: To enable users to find tickers based on keywords.
-Global Quote: To retrieve the latest price, volume, and percentage change for specific stocks.
+## ✨ Key Features
+- **Real-Time Data:** Fetches live price and change data via the Alpha Vantage Global Quote endpoint.
+- **Dynamic Watchlist:** Add and remove stocks from a personalized list.
+- **HOF Manipulation:** - `.sort()`: Organize stocks by price (High to Low).
+  - `.filter()`: View only premium stocks (> $150) or remove items from the list.
+  - `.map()`: Dynamically render stock cards.
+- **Persistence:** Your watchlist stays saved in the browser across sessions.
 
-✨ Planned Features
-Search Functionality: Users can search for stocks using company names or ticker symbols.
-Advanced Filtering: Filter the display to show only "Top Gainers" or stocks within specific price ranges.
-Dynamic Sorting: Arrange the dashboard data by price, percentage change, or alphabetical order.
-Responsive UI: A fully mobile-responsive design to ensure usability across all devices.
-Technical Implementation: All data processing (searching, filtering, and sorting) is handled strictly using Array Higher-Order Functions like .map(), .filter(), and .sort()
+## 🚀 Setup
+1. Clone the repo.
+2. Run `npm install`.
+3. Create a `.env` file and add `VITE_ALPHA_KEY=YOUR_API_KEY`.
+4. Start the server with `npm run dev`.
 
-🚀 Setup and Installation
-Clone the repository to your local machine.
-Install dependencies and start the Vite development server:
-
-  npm install
-  npm run dev
-
-Open the app using the local Vite URL shown in the terminal (for example, http://localhost:5173).
-Do not open `index.html` directly via the file system, because Vite environment variables like `VITE_ALPHA_KEY` require the dev server to be loaded.
-Ensure you have an active internet connection to fetch real-time data from the Alpha Vantage API.
+## 📂 Project Structure
+- `/js/api.js` - API fetch logic.
+- `/js/utils.js` - Helper functions (HOFs & LocalStorage).
+- `/js/app.js` - Event listeners and UI controller.
