@@ -62,3 +62,11 @@ display.addEventListener('click', (event) => {
         renderAllStocks(stockList, display);
     }
 });
+
+container.innerHTML = stocks.map(stock => `
+    <div class="stock-card">
+        <h3>${stock.symbol}</h3>
+        <p>Price: $${stock.price.toFixed(2)}</p>
+        <button class="delete-btn" data-symbol="${stock.symbol}">Remove</button>
+    </div>
+`).join('');
