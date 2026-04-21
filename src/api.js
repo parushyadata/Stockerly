@@ -7,17 +7,14 @@ if (!API_KEY) {
     );
 }
 
+// Ensure this is in js/api.js
 export async function getStockHistory(symbol) {
     const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${import.meta.env.VITE_ALPHA_KEY}`;
     
     const response = await fetch(url);
     const data = await response.json();
     
-    // Safety check for Alpha Vantage limits
-    if (!data["Time Series (Daily)"]) {
-        console.error("History data missing. API Limit likely reached.", data);
-        return null; 
-    }
+    if (!data["Time Series (Daily)"]) return null;
 
     const timeSeries = data["Time Series (Daily)"];
     const dates = Object.keys(timeSeries).slice(0, 7).reverse();
@@ -25,7 +22,6 @@ export async function getStockHistory(symbol) {
     
     return { dates, prices };
 }
-
 export async function getStockQuote(symbol) {
     const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${import.meta.env.VITE_ALPHA_KEY}`;
     

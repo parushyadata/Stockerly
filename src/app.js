@@ -1,5 +1,5 @@
 import Chart from 'chart.js/auto';
-import { getStockQuote, getStockHistory } from './api.js'; // Ensure getStockHistory is exported from api.js
+import { getStockQuote, getStockHistory } from './api.js';
 import { renderAllStocks, sortByPrice, filterExpensive, removeStock, saveToLocal, loadFromLocal } from './utils.js';
 
 // DOM Elements
@@ -10,18 +10,19 @@ const status = document.getElementById('statusMessage');
 
 // State Management
 let stockList = loadFromLocal(); 
-const chartInstances = {}; // Track charts to prevent reuse errors
+const chartInstances = {}; // Track Chart.js objects to prevent reuse errors
 
 // Initial Render
 renderAllStocks(stockList, display);
 
-/** * SEARCH LOGIC
+/**
+ * SEARCH LOGIC
  */
 searchBtn.addEventListener('click', async () => {
     const symbol = searchInput.value.toUpperCase().trim();
     if (!symbol) return;
 
-    status.innerHTML = "Fetching market data...";
+    status.innerHTML = "Connecting to market server...";
     
     try {
         const data = await getStockQuote(symbol);
@@ -33,7 +34,7 @@ searchBtn.addEventListener('click', async () => {
                 change: data["10. change percent"]
             };
 
-            // Avoid duplicates
+            // Prevent duplicate entries in watchlist
             if (!stockList.some(s => s.symbol === newStock.symbol)) {
                 stockList.push(newStock);
                 saveToLocal(stockList);
@@ -43,6 +44,7 @@ searchBtn.addEventListener('click', async () => {
             renderAllStocks(stockList, display);
         }
     } catch (err) {
+        // Displays API errors (like rate limits) directly to the user
         status.innerHTML = `<span style="color: #ff6b6b;">${err.message}</span>`;
         console.error("Search Error:", err);
     }
@@ -50,6 +52,7 @@ searchBtn.addEventListener('click', async () => {
 
 /**
  * CHART INITIALIZATION
+ * Fetches 7-day history and renders a line chart
  */
 async function initChart(symbol) {
     const history = await getStockHistory(symbol);
@@ -58,7 +61,7 @@ async function initChart(symbol) {
     const canvas = document.getElementById(`chart-${symbol}`);
     const ctx = canvas.getContext('2d');
 
-    // Destroy existing chart if it exists
+    // Important: Destroy existing chart instance before creating a new one
     if (chartInstances[symbol]) {
         chartInstances[symbol].destroy();
     }
@@ -70,14 +73,17 @@ async function initChart(symbol) {
             datasets: [{
                 label: 'Price',
                 data: history.prices,
-                borderColor: '#4A90E2',
+                borderColor: '#4A90E2', // Your signature blue
+                backgroundColor: 'rgba(74, 144, 226, 0.1)',
+                borderWidth: 2,
                 tension: 0.3,
-                fill: false,
-                pointRadius: 2
+                fill: true,
+                pointRadius: 3
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
                 x: { display: false },
@@ -95,12 +101,11 @@ display.addEventListener('click', async (event) => {
     const symbol = target.getAttribute('data-symbol');
     if (!symbol) return;
 
-    // Handle Remove
+    // Handle Delete
     if (target.classList.contains('delete-btn')) {
         stockList = removeStock(stockList, symbol);
         saveToLocal(stockList);
         
-        // Cleanup chart instance if it exists
         if (chartInstances[symbol]) {
             chartInstances[symbol].destroy();
             delete chartInstances[symbol];
@@ -109,7 +114,7 @@ display.addEventListener('click', async (event) => {
         renderAllStocks(stockList, display);
     }
 
-    // Handle Show Graph
+    // Handle Show Graph (Toggle)
     if (target.classList.contains('graph-btn')) {
         const canvas = document.getElementById(`chart-${symbol}`);
         
@@ -117,39 +122,16 @@ display.addEventListener('click', async (event) => {
             canvas.style.display = 'none';
             target.innerText = 'Show Graph';
         } else {
-            const originalText = target.innerText;
-            target.innerText = 'Loading...';
-            
+            target.innerText = 'Loading History...';
             try {
                 canvas.style.display = 'block';
                 await initChart(symbol);
                 target.innerText = 'Hide Graph';
             } catch (err) {
-                target.innerText = 'Error';
+                target.innerText = 'Error Loading';
                 console.error(err);
             }
         }
     }
 });
 
-/**
- * GLOBAL CONTROLS (Sort/Filter)
- */
-document.getElementById('sortBtn').addEventListener('click', () => {
-    const sortedData = sortByPrice(stockList);
-    renderAllStocks(sortedData, display);
-});
-
-document.getElementById('filterBtn').addEventListener('click', () => {
-    const filteredData = filterExpensive(stockList);
-    renderAllStocks(filteredData, display);
-});
-
-document.getElementById('showAllBtn').addEventListener('click', () => {
-    renderAllStocks(stockList, display);
-});
-
-// Load any existing charts on page load if they were open (Optional)
-window.addEventListener('DOMContentLoaded', () => {
-    renderAllStocks(stockList, display);
-});
