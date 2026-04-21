@@ -1,6 +1,6 @@
 import Chart from 'chart.js/auto';
 import { getStockQuote } from './api.js';
-import { renderAllStocks, sortByPrice, filterExpensive, removeStock, saveToLocal, loadFromLocal,getStockQuote } from './utils.js';
+import { renderAllStocks, sortByPrice, filterExpensive, removeStock, saveToLocal, loadFromLocal } from './utils.js';
 
 const searchBtn = document.getElementById('searchBtn');
 const searchInput = document.getElementById('searchInput');

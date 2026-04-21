@@ -26,3 +26,16 @@ export async function getStockHistory(symbol) {
         return null;
     }
 }
+export async function getStockQuote(symbol) {
+    // 1. The URL
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${import.meta.env.VITE_ALPHA_KEY}`;
+    
+    // 2. The Fetch
+    const response = await fetch(url);
+    
+    // 3. The Conversion
+    const data = await response.json();
+    
+    // 4. The Delivery
+    return data["Global Quote"];
+}
