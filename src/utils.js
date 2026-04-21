@@ -9,12 +9,13 @@ export function renderAllStocks(stocks, container) {
     }
 
   // Inside js/utils.js
+// Inside your renderAllStocks function
 container.innerHTML = stocks.map(stock => `
     <div class="stock-card">
         <h3>${stock.symbol}</h3>
         <p class="price">$${stock.price.toFixed(2)}</p>
         
-        <canvas id="chart-${stock.symbol}" style="display: none; width: 100%; height: 150px;"></canvas>
+        <canvas id="chart-${stock.symbol}" style="display: none; height: 150px;"></canvas>
         
         <div class="card-actions">
             <button class="graph-btn" data-symbol="${stock.symbol}">Show Graph</button>
