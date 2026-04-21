@@ -7,35 +7,22 @@ if (!API_KEY) {
     );
 }
 
-export async function getStockQuote(symbol) {
-    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`;
-    console.debug('[Stockerly] Fetching URL:', url);
-
+export async function getStockHistory(symbol) {
+    // Using the Daily Time Series endpoint
+    const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${import.meta.env.VITE_ALPHA_KEY}`;
+    
     try {
         const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Network issue: ${response.status} ${response.statusText}`);
-        }
-
         const data = await response.json();
-        console.debug('[Stockerly] API response:', data);
-
-        if (data.Note) {
-            throw new Error('Rate limit reached. Please wait a minute.');
-        }
-
-        if (data['Error Message']) {
-            throw new Error('Invalid symbol or API request. Check the ticker and try again.');
-        }
-
-        const quote = data['Global Quote'];
-        if (!quote || Object.keys(quote).length === 0) {
-            throw new Error(`No quote returned for ${symbol}.`);
-        }
-
-        return quote;
+        
+        // Alpha Vantage returns dates as keys, we need to extract the last 7 days of prices
+        const timeSeries = data["Time Series (Daily)"];
+        const dates = Object.keys(timeSeries).slice(0, 7).reverse();
+        const prices = dates.map(date => parseFloat(timeSeries[date]["4. close"]));
+        
+        return { dates, prices };
     } catch (error) {
-        console.error('API Error:', error);
-        throw error;
+        console.error("History Fetch Error:", error);
+        return null;
     }
 }

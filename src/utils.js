@@ -1,18 +1,24 @@
 // This file is not currently used - app.js is loaded directly in index.html
 // Keeping as placeholder for future expansion
 // Function to generate the HTML for your stocks
+// Inside js/utils.js
 export function renderAllStocks(stocks, container) {
     if (stocks.length === 0) {
-        container.innerHTML = "<p>Your watchlist is empty. Search for a stock to add it!</p>";
+        container.innerHTML = "<p>Your watchlist is empty.</p>";
         return;
     }
 
     container.innerHTML = stocks.map(stock => `
-        <div class="stock-card">
+        <div class="stock-card" id="card-${stock.symbol}">
             <h3>${stock.symbol}</h3>
-            <p>Price: $${stock.price.toFixed(2)}</p>
-            <p>Change: ${stock.change}</p>
-            <button class="delete-btn" data-symbol="${stock.symbol}">Remove</button>
+            <p class="price">$${stock.price.toFixed(2)}</p>
+            
+            <canvas id="chart-${stock.symbol}" style="display: none; margin: 10px 0;"></canvas>
+            
+            <div class="card-actions">
+                <button class="graph-btn" data-symbol="${stock.symbol}">Show Graph</button>
+                <button class="delete-btn" data-symbol="${stock.symbol}">Remove</button>
+            </div>
         </div>
     `).join('');
 }

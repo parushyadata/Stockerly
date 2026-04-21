@@ -1,3 +1,4 @@
+import Chart from 'chart.js/auto';
 import { getStockQuote } from './api.js';
 import { renderAllStocks, sortByPrice, filterExpensive, removeStock, saveToLocal, loadFromLocal } from './utils.js';
 
@@ -10,29 +11,32 @@ let stockList = loadFromLocal(); // Initialize your watchlist from LocalStorage
 renderAllStocks(stockList, display); // Render saved stocks immediately on page load
 
 // Step B: Update your search event listener
+// Inside your searchBtn event listener in js/app.js
 searchBtn.addEventListener('click', async () => {
     const symbol = searchInput.value.toUpperCase().trim();
-    if (!symbol) return;
+    
+    // ... existing fetch logic for the Quote ...
 
-    try {
-        const data = await getStockQuote(symbol);
-        
-        if (data && data["01. symbol"]) {
-            // Check if stock is already in list to avoid duplicates
-            if (!stockList.some(s => s.symbol === data["01. symbol"])) {
-                // Add the new stock object to our array
-                stockList.push({
-                    symbol: data["01. symbol"],
-                    price: parseFloat(data["05. price"]),
-                    change: data["10. change percent"]
-                });
-                stockList.push(newStock)
-                saveToLocal(stockList);
-            }
-            renderAllStocks(stockList, display); // Render the whole list
+    if (data && data["01. symbol"]) {
+        const newStock = {
+            symbol: data["01. symbol"],
+            price: parseFloat(data["05. price"]),
+            change: data["10. change percent"]
+        };
+
+        if (!stockList.some(s => s.symbol === newStock.symbol)) {
+            stockList.push(newStock);
+            saveToLocal(stockList);
         }
-    } catch (err) {
-        console.error(err);
+
+        // 1. First, render the HTML cards (including the <canvas>)
+        renderAllStocks(stockList, display);
+
+        // 2. NEW STEP: Loop through your list and initialize the charts
+        // We do this AFTER rendering so the <canvas> actually exists in the DOM
+        stockList.forEach(stock => {
+            initChart(stock.symbol); 
+        });
     }
 });
 
@@ -66,4 +70,72 @@ display.addEventListener('click', (event) => {
     // Re-render the UI with the updated list
     renderAllStocks(stockList, display);
 });
+async function initChart(symbol) {
+    const history = await getStockHistory(symbol);
+    if (!history) return;
 
+    const ctx = document.getElementById(`chart-${symbol}`).getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: history.dates,
+            datasets: [{
+                label: 'Last 7 Days',
+                data: history.prices,
+                borderColor: '#4A90E2', // Your signature blue!
+                tension: 0.1,
+                fill: false
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: { x: { display: false }, y: { display: false } }
+        }
+    });
+}
+// At the bottom of js/app.js for page initialization
+window.addEventListener('DOMContentLoaded', () => {
+    if (stockList.length > 0) {
+        renderAllStocks(stockList, display);
+        stockList.forEach(stock => {
+            initChart(stock.symbol);
+        });
+    }
+});
+// Add this to your existing event listener in js/app.js
+display.addEventListener('click', async (event) => {
+    const symbol = event.target.getAttribute('data-symbol');
+
+    // Handle Delete (Existing Logic)
+    if (event.target.classList.contains('delete-btn')) {
+        stockList = removeStock(stockList, symbol);
+        saveToLocal(stockList);
+        renderAllStocks(stockList, display);
+    }
+
+    // NEW: Handle Show Graph
+    if (event.target.classList.contains('graph-btn')) {
+        const canvas = document.getElementById(`chart-${symbol}`);
+        
+        // Toggle: If it's already showing, hide it
+        if (canvas.style.display === 'block') {
+            canvas.style.display = 'none';
+            event.target.innerText = 'Show Graph';
+            return;
+        }
+
+        // Show loading state on button
+        const originalText = event.target.innerText;
+        event.target.innerText = 'Loading...';
+
+        try {
+            // Show the canvas and initialize the chart
+            canvas.style.display = 'block';
+            await initChart(symbol);
+            event.target.innerText = 'Hide Graph';
+        } catch (err) {
+            event.target.innerText = 'Error';
+            console.error(err);
+        }
+    }
+});
