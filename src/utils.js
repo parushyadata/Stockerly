@@ -8,19 +8,20 @@ export function renderAllStocks(stocks, container) {
         return;
     }
 
-    container.innerHTML = stocks.map(stock => `
-        <div class="stock-card" id="card-${stock.symbol}">
-            <h3>${stock.symbol}</h3>
-            <p class="price">$${stock.price.toFixed(2)}</p>
-            
-            <canvas id="chart-${stock.symbol}" style="display: none; margin: 10px 0;"></canvas>
-            
-            <div class="card-actions">
-                <button class="graph-btn" data-symbol="${stock.symbol}">Show Graph</button>
-                <button class="delete-btn" data-symbol="${stock.symbol}">Remove</button>
-            </div>
+  // Inside js/utils.js
+container.innerHTML = stocks.map(stock => `
+    <div class="stock-card">
+        <h3>${stock.symbol}</h3>
+        <p class="price">$${stock.price.toFixed(2)}</p>
+        
+        <canvas id="chart-${stock.symbol}" style="display: none; width: 100%; height: 150px;"></canvas>
+        
+        <div class="card-actions">
+            <button class="graph-btn" data-symbol="${stock.symbol}">Show Graph</button>
+            <button class="delete-btn" data-symbol="${stock.symbol}">Remove</button>
         </div>
-    `).join('');
+    </div>
+`).join('');
 }
 
 // HOF: .sort() - Organizes data by price
