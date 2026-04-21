@@ -27,15 +27,16 @@ export async function getStockHistory(symbol) {
     }
 }
 export async function getStockQuote(symbol) {
-    // 1. The URL
     const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${import.meta.env.VITE_ALPHA_KEY}`;
     
-    // 2. The Fetch
     const response = await fetch(url);
-    
-    // 3. The Conversion
     const data = await response.json();
-    
-    // 4. The Delivery
+
+    // ERROR HANDLING: If the API sends a "Note" or "Information" instead of the Quote
+    if (!data["Global Quote"] || Object.keys(data["Global Quote"]).length === 0) {
+        console.error("API Error:", data);
+        throw new Error(data["Note"] || data["Information"] || `No quote returned for ${symbol}.`);
+    }
+
     return data["Global Quote"];
 }
