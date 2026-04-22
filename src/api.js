@@ -17,10 +17,11 @@ export async function getStockHistory(symbol) {
     if (!data["Time Series (Daily)"]) return null;
 
     const timeSeries = data["Time Series (Daily)"];
-    const dates = Object.keys(timeSeries).slice(0, 7).reverse();
-    const prices = dates.map(date => parseFloat(timeSeries[date]["4. close"]));
+    // Get all dates, reverse them so they go left-to-right (oldest to newest)
+    const allDates = Object.keys(timeSeries).reverse();
+    const allPrices = allDates.map(date => parseFloat(timeSeries[date]["4. close"]));
     
-    return { dates, prices };
+    return { allDates, allPrices };
 }
 export async function getStockQuote(symbol) {
     const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${import.meta.env.VITE_ALPHA_KEY}`;

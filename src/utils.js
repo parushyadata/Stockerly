@@ -10,13 +10,21 @@ export function renderAllStocks(stocks, container) {
 
   // Inside js/utils.js
 // Inside your renderAllStocks function
+// Inside renderAllStocks in js/utils.js
 container.innerHTML = stocks.map(stock => `
     <div class="stock-card">
         <h3>${stock.symbol}</h3>
         <p class="price">$${stock.price.toFixed(2)}</p>
         
-        <canvas id="chart-${stock.symbol}" style="display: none; height: 150px;"></canvas>
+        <canvas id="chart-${stock.symbol}" style="display: none; height: 120px;"></canvas>
         
+        <div id="slider-cont-${stock.symbol}" class="slider-container" style="display: none;">
+            <label>View: <span id="val-${stock.symbol}">7</span> Days</label>
+            <input type="range" class="date-slider" 
+                   data-symbol="${stock.symbol}" 
+                   min="5" max="100" value="7">
+        </div>
+
         <div class="card-actions">
             <button class="graph-btn" data-symbol="${stock.symbol}">Show Graph</button>
             <button class="delete-btn" data-symbol="${stock.symbol}">Remove</button>

@@ -9,9 +9,85 @@ const display = document.getElementById('stockDisplay');
 const status = document.getElementById('statusMessage');
 
 // State Management
-let stockList = loadFromLocal(); 
-const chartInstances = {}; // Track Chart.js objects to prevent reuse errors
+// At the top of app.js
+const fullDataCache = {}; 
+const chartInstances = {};
 
+// 1. Update the Click Listener for "Show Graph"
+display.addEventListener('click', async (event) => {
+    const target = event.target;
+    const symbol = target.getAttribute('data-symbol');
+    if (!symbol) return;
+
+    if (target.classList.contains('graph-btn')) {
+        const canvas = document.getElementById(`chart-${symbol}`);
+        const sliderCont = document.getElementById(`slider-cont-${symbol}`);
+
+        if (canvas.style.display === 'block') {
+            canvas.style.display = 'none';
+            sliderCont.style.display = 'none';
+            target.innerText = 'Show Graph';
+        } else {
+            target.innerText = 'Loading...';
+            // Only fetch if NOT in cache to save API credits
+            if (!fullDataCache[symbol]) {
+                fullDataCache[symbol] = await getStockHistory(symbol);
+            }
+            
+            if (fullDataCache[symbol]) {
+                canvas.style.display = 'block';
+                sliderCont.style.display = 'block';
+                renderChart(symbol, 7); // Default view is 7 days
+                target.innerText = 'Hide Graph';
+            }
+        }
+    }
+    // ... include your existing delete logic here ...
+});
+
+// 2. Add the Slider Input Listener
+display.addEventListener('input', (event) => {
+    if (event.target.classList.contains('date-slider')) {
+        const symbol = event.target.getAttribute('data-symbol');
+        const days = parseInt(event.target.value);
+        
+        // Update the number label in UI
+        document.getElementById(`val-${symbol}`).innerText = days;
+        
+        // Redraw chart using cached data (no API call)
+        renderChart(symbol, days);
+    }
+});
+
+// 3. Optimized Chart Rendering Function
+function renderChart(symbol, days) {
+    const data = fullDataCache[symbol];
+    const ctx = document.getElementById(`chart-${symbol}`).getContext('2d');
+
+    if (chartInstances[symbol]) {
+        chartInstances[symbol].destroy();
+    }
+
+    chartInstances[symbol] = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.allDates.slice(-days), // Slice the last X days
+            datasets: [{
+                data: data.allPrices.slice(-days),
+                borderColor: '#4A90E2',
+                tension: 0.2,
+                pointRadius: days > 50 ? 0 : 2, // Hide dots if too many days
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { display: false }, y: { display: false } }
+        }
+    });
+}
 // Initial Render
 renderAllStocks(stockList, display);
 

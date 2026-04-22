@@ -378,3 +378,18 @@ canvas {
     width: 100% !important;
     margin: 15px 0;
 }
+.slider-container {
+    margin: 10px 0;
+    font-size: 0.8rem;
+    color: #bbb;
+}
+
+.date-slider {
+    width: 100%;
+    cursor: pointer;
+    accent-color: #4A90E2; /* Matches your blue theme */
+}
+
+.stock-card {
+    min-height: 380px; /* Give a bit more room for the slider */
+}
